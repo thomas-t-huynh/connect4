@@ -19,9 +19,9 @@ app.use(express.static(publicDirectoryPath))
 
 io.on('connection', (socket) => {
     console.log('new web socket connection');
-    socket.emit('welcome', 'Welcome to chat app')
+    socket.emit('message', 'Welcome to chat app')
     //broadcast emits to everyone, but the person who just joined
-    socket.broadcast.emit('message', 'a new user has joined!')
+    socket.broadcast.emit('message', 'a new user has joined!') 
 
     socket.on('sendMessage', (message, callback) => {
         const filter = new Filter();
