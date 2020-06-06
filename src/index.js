@@ -4,6 +4,7 @@ const express = require('express')
 const socketio = require('socket.io');
 const Filter = require('bad-words');
 
+const { generateMessage } = require('./utils/messages')
 const app = express();
 
 const server = http.createServer(app)
@@ -19,14 +20,14 @@ app.use(express.static(publicDirectoryPath))
 
 io.on('connection', (socket) => {
     console.log('new web socket connection');
-    socket.emit('message', 'Welcome to chat app')
+    socket.emit('message', generateMessage('Welcome!') )
     //broadcast emits to everyone, but the person who just joined
-    socket.broadcast.emit('message', 'a new user has joined!') 
+    socket.broadcast.emit('message', generateMessage('a new user has joined!') ) 
 
     socket.on('sendMessage', (message, callback) => {
         const filter = new Filter();
-
-        io.emit('message', filter.clean(message))
+        const cleanMessage = filter.clean(message)
+        io.emit('message', generateMessage(cleanMessage))
 
         callback('message delivered');
     })
@@ -38,7 +39,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('disconnect', () => {
-        io.emit('message', 'A user has left')
+        io.emit('message', generateMessage('A user has left'))
     })
 })
 
