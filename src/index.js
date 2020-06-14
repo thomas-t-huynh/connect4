@@ -20,9 +20,14 @@ app.use(express.static(publicDirectoryPath))
 
 io.on('connection', (socket) => {
     console.log('new web socket connection');
-    socket.emit('message', generateMessage('Welcome!') )
-    //broadcast emits to everyone, but the person who just joined
-    socket.broadcast.emit('message', generateMessage('a new user has joined!') ) 
+
+    socket.on('join', ({ username, room }) => {
+        socket.join(room)
+
+        socket.emit('message', generateMessage('Welcome!') )
+        //broadcast emits to everyone, but the person who just joined
+        socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined the room.`) ) 
+    })
 
     socket.on('sendMessage', (message, callback) => {
         const filter = new Filter();
